@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Similarity App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+    }
+    .floating-label {
+      position: relative;
+    }
+    .floating-label input {
+      padding-top: 1.5rem;
+    }
+    .floating-label label {
+      position: absolute;
+      left: 1rem;
+      top: 0.5rem;
+      color: #9ca3af;
+      font-size: 0.875rem;
+      transition: 0.3s ease;
+      pointer-events: none;
+    }
+    .floating-label input:focus + label,
+    .floating-label input:not(:placeholder-shown) + label {
+      top: -0.75rem;
+      left: 0.75rem;
+      background-color: #1e293b;
+      padding: 0 0.25rem;
+      font-size: 0.75rem;
+      color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-white px-4">
+  <div class="w-full max-w-xl bg-slate-800 p-8 rounded-2xl shadow-2xl animate-fade-in">
+    <h1 class="text-4xl font-bold text-center mb-6 text-white">🔍 Word Similarity Finder</h1>
+
+    <form method="post" class="space-y-6">
+      <div class="floating-label">
+        <input type="text" name="word" placeholder=" " required value="{{ word }}"
+          class="w-full px-4 py-3 rounded-md bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <label>Enter a word</label>
+      </div>
+
+      <div class="flex justify-between items-center gap-4">
+        <label class="flex items-center space-x-2">
+          <input type="radio" name="model_type" value="custom" {% if model_type == "custom" %}checked{% endif %}
+            class="form-radio text-blue-500" />
+          <span>Custom</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input type="radio" name="model_type" value="pretrained" {% if model_type == "pretrained" %}checked{% endif %}
+            class="form-radio text-blue-500" />
+          <span>Pre-trained</span>
+        </label>
+
+        <label class="ml-auto text-sm">
+          Top N:
+          <select name="top_n" class="ml-2 bg-slate-700 border border-slate-600 rounded px-2 py-1">
+            {% for n in range(1, 11) %}
+              <option value="{{n}}" {% if topn == n %}selected{% endif %}>{{n}}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <button type="submit"
+        class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl font-semibold transition duration-300 ease-in-out shadow-md hover:shadow-lg">
+        🚀 Find Similar Words
+      </button>
+    </form>
+
+    {% if error %}
+      <p class="mt-4 text-red-400 font-semibold">{{ error }}</p>
+    {% endif %}
+
+    {% if result %}
+      <div class="mt-8 bg-slate-700 p-4 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold mb-3">Results for "<span class="text-yellow-400">{{ word }}</span>":</h2>
+        <ul class="list-disc list-inside space-y-1 text-white">
+          {% for word, score in result %}
+            <li class="hover:text-blue-400 transition">{{ word }} — <span class="text-green-400">{{ '%.4f'|format(score) }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        radio.closest('form').submit();
+      });
+    });
+  </script>
+</body>
+</html>
