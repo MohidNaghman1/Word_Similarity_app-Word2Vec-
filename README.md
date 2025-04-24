@@ -1,32 +1,60 @@
-🚀 𝐏𝐫𝐨𝐣𝐞𝐜𝐭 𝐒𝐡𝐨𝐰𝐜𝐚𝐬𝐞: 𝐖𝐨𝐫𝐝 𝐒𝐢𝐦𝐢𝐥𝐚𝐫𝐢𝐭𝐲 𝐖𝐞𝐛 𝐀𝐩𝐩 𝐮𝐬𝐢𝐧𝐠 𝐖𝐨𝐫𝐝𝟐𝐕𝐞𝐜 & 𝐆𝐥𝐨𝐕𝐞 🔍🧠
+✅ 1. Download GloVe Embeddings
+You can download GloVe (Global Vectors for Word Representation) from the official Stanford NLP site:
 
-I'm excited to share my latest NLP-based project where I built a web application that calculates semantic similarity between words using two powerful techniques:
-➡ Custom-trained Word2Vec model
-➡ Pre-trained GloVe embeddings
+🔗 https://nlp.stanford.edu/data/glove.6B.zip
 
-💡 The app allows users to enter a word and instantly view the top similar words based on vector semantics — all through a user-friendly interface powered by Flask.
+⚠️ The total ZIP file is around 822 MB, so make sure you have a good internet connection.
 
-🧠 𝐖𝐡𝐚𝐭 𝐈 𝐃𝐢𝐝:
+✅ 2. Extract the ZIP File
+After downloading:
 
-Built a Flask-based web app for real-time word similarity predictions
+Right-click on glove.6B.zip
 
-Trained a custom Word2Vec model using a structured corpus (including cricket-related vocabulary ⚾)
+Select “Extract All…”
 
-Integrated GloVe (300d) pre-trained vectors for comparison
+You’ll get the following .txt files:
 
-Designed a clean and simple frontend using HTML, CSS, and Bootstrap
+glove.6B.50d.txt
 
-Handled dynamic rendering with Jinja2 templates
+glove.6B.100d.txt
 
-🛠 𝐓𝐨𝐨𝐥𝐬 𝐔𝐬𝐞𝐝:
+glove.6B.200d.txt
 
-Python 🐍
+glove.6B.300d.txt ✅ (we will use this one)
 
-Flask (Web App Framework)
+✅ 3. Convert GloVe to Word2Vec Format
+GloVe format is not directly compatible with Gensim, so we need to convert it using a built-in Gensim utility.
 
-Gensim (Word2Vec Modeling)
+Here’s how:
 
-Pre-trained GloVe Embeddings
+python
 
-HTML, CSS, Bootstrap (Frontend Styling)
+from gensim.scripts.glove2word2vec import glove2word2vec
 
+# Paths
+glove_input_file = "glove.6B.300d.txt"
+word2vec_output_file = "glove.6B.300d.word2vec.txt"
+
+# Convert
+glove2word2vec(glove_input_file, word2vec_output_file)
+This will create the file glove.6B.300d.word2vec.txt in the same directory — now Gensim can load it!
+
+✅ 4. Load the Converted File in Your App
+You can now load the .word2vec.txt file like this:
+
+python
+
+from gensim.models import KeyedVectors
+
+model = KeyedVectors.load_word2vec_format("glove.6B.300d.word2vec.txt", binary=False)
+✅ 5. Use It to Find Similar Words
+python
+
+model.most_similar("cricket", topn=5)
+Example output:
+
+[('batsman', 0.74), ('match', 0.72), ('innings', 0.68), ...]
+🧠 Tips for Smooth Usage
+Keep the GloVe .txt files inside a models/ folder to stay organized.
+
+Add glove.6B.300d.word2vec.txt to .gitignore if it's large and already available online.
